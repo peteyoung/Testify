@@ -6,15 +6,15 @@ using TestifyTDD.Helpers;
 
 namespace TestifyTDD
 {
-    public class TestDataBuilderBase<TDOMAIN, TTHIS> : ITestDataBuilder<TDOMAIN, TTHIS>
-        where TTHIS : TestDataBuilderBase<TDOMAIN, TTHIS>, new()
+    public class TestDataBuilder<TDOMAIN, TTHIS> : ITestDataBuilder<TDOMAIN, TTHIS>
+        where TTHIS : TestDataBuilder<TDOMAIN, TTHIS>, new()
     {
         private Dictionary<PropertyInfo, object> _propertyValues = 
             new Dictionary<PropertyInfo, object>();
 
         protected PropertyHelper<TDOMAIN> _helper = new PropertyHelper<TDOMAIN>();
         
-        public TestDataBuilderBase()
+        public TestDataBuilder()
         {
             PostBuildEvent += OnPostBuild;
         }

@@ -4,7 +4,7 @@ using Tests.TestingDomain;
 namespace Tests.TestDataBuilders
 {
     internal class AddressBuilder :
-        TestDataBuilderBase<Address, AddressBuilder>
+        TestDataBuilder<Address, AddressBuilder>
     {
         public AddressBuilder()
         {

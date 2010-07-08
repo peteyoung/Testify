@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using NBehave.Spec.NUnit;
+using TestifyTDD;
 using Tests.TestingDomain;
 using Tests.TestDataBuilders;
 
@@ -63,7 +64,7 @@ namespace Tests
         }
     }
 
-    public class AddressBookBuilder : UnitTestTestDataBuilder<AddressBook, AddressBookBuilder>
+    public class AddressBookBuilder : TestDataBuilder<AddressBook, AddressBookBuilder>
     {
         public AddressBookBuilder()
         {

@@ -4,7 +4,7 @@ using Tests.TestingDomain;
 namespace Tests.TestDataBuilders
 {
     internal class HouseholdBuilder :
-        TestDataBuilderBase<Household, HouseholdBuilder>
+        TestDataBuilder<Household, HouseholdBuilder>
     {
         public HouseholdBuilder()
         {

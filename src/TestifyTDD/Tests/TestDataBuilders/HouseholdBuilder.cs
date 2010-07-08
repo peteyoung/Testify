@@ -1,9 +1,10 @@
+using TestifyTDD;
 using Tests.TestingDomain;
 
 namespace Tests.TestDataBuilders
 {
     internal class HouseholdBuilder :
-        UnitTestTestDataBuilder<Household, HouseholdBuilder>
+        TestDataBuilderBase<Household, HouseholdBuilder>
     {
         public HouseholdBuilder()
         {

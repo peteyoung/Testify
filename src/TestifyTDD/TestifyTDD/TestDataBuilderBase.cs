@@ -6,14 +6,13 @@ using TestifyTDD.Helpers;
 
 namespace TestifyTDD
 {
-    public class TestDataBuilderBase<TDOMAIN, TDOMAINBASE, TTHIS> : ITestDataBuilder<TDOMAIN, TDOMAINBASE, TTHIS>
-        where TDOMAIN : TDOMAINBASE
-        where TTHIS : TestDataBuilderBase<TDOMAIN, TDOMAINBASE, TTHIS>, new()
+    public class TestDataBuilderBase<TDOMAIN, TTHIS> : ITestDataBuilder<TDOMAIN, TTHIS>
+        where TTHIS : TestDataBuilderBase<TDOMAIN, TTHIS>, new()
     {
         private Dictionary<PropertyInfo, object> _propertyValues = 
             new Dictionary<PropertyInfo, object>();
 
-        protected PropertyHelper<TDOMAIN, TDOMAINBASE> _helper = new PropertyHelper<TDOMAIN, TDOMAINBASE>();
+        protected PropertyHelper<TDOMAIN> _helper = new PropertyHelper<TDOMAIN>();
         
         public TestDataBuilderBase()
         {
@@ -88,9 +87,8 @@ namespace TestifyTDD
          */
         public TTHIS With<TRETURNS, TBUILDER>(
             Expression<Func<TDOMAIN, TRETURNS>> property,
-            ITestDataBuilder<TRETURNS, TDOMAINBASE, TBUILDER> builder)
-            where TRETURNS : TDOMAINBASE
-            where TBUILDER : ITestDataBuilder<TRETURNS, TDOMAINBASE, TBUILDER>, new()
+            ITestDataBuilder<TRETURNS, TBUILDER> builder)
+            where TBUILDER : ITestDataBuilder<TRETURNS, TBUILDER>, new()
         {
             var propertyInfo = _helper.GetPropertyInfo(property);
             SetPropertyValue(propertyInfo, builder);
@@ -105,7 +103,6 @@ namespace TestifyTDD
         public TTHIS Withs<TRETURNS, TSUBDOMAIN>(
             Expression<Func<TDOMAIN, TRETURNS>> property,
             params TSUBDOMAIN[] values)
-            where TSUBDOMAIN : TDOMAINBASE
             where TRETURNS : IList<TSUBDOMAIN>
         {
             var list = new List<TSUBDOMAIN>();
@@ -141,7 +138,7 @@ namespace TestifyTDD
             if (mayBeBuilder.GetType().IsValueType)
                 return false;
 
-            var iTestDataBuilderTypeDefinition = typeof(ITestDataBuilder<,,>);
+            var iTestDataBuilderTypeDefinition = typeof(ITestDataBuilder<,>);
 
             var iTestDataBuilderType = mayBeBuilder
                 .GetType()

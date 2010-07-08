@@ -152,7 +152,7 @@ namespace Tests
 
             // BUG: This line throws a TypeLoadException which was supposed to have been fixed in Rhino Mocks
             //      3.6. It was a bug that was actually fixed in Castle.DynamicProxy2
-            var mockAddressBuilder = M<ITestDataBuilder<Address, UnitTestDomainBase, AddressBuilder>>();
+            var mockAddressBuilder = M<ITestDataBuilder<Address, AddressBuilder>>();
             mockAddressBuilder.Expect(b => b.Build()).Return(address);
 
             _householdBuilder.With(b => b.Address, mockAddressBuilder);

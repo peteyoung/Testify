@@ -66,9 +66,11 @@
     <Compile Include="TestDataBuilderCollectionSpec.cs" />
     <Compile Include="TestDataBuilderSpec.cs" />
     <Compile Include="TestDataBuilders\AddressBuilder.cs" />
+    <Compile Include="TestDataBuilders\BuilderEventFiredMock.cs" />
     <Compile Include="TestDataBuilders\HouseholdBuilder.cs" />
     <Compile Include="TestingDomain\Address.cs" />
     <Compile Include="TestingDomain\AddressBook.cs" />
+    <Compile Include="TestingDomain\BuilderEventFiredDummy.cs" />
     <Compile Include="TestingDomain\Household.cs" />
     <Compile Include="TestingDomain\UnitTestDomainBase.cs" />
     <Compile Include="TestBase.cs" />

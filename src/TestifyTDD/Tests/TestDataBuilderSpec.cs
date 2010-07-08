@@ -218,6 +218,33 @@ namespace Tests
             houseHold.Address.IsNew.ShouldEqual(otherAddressIsNew);
         }
 
+        [Test]
+        public void Build_method_should_cause_PostBuildEvent_to_fire()
+        {
+            // Arrange
+            var eventFiredMock = new BuilderEventFiredMock();
 
+            // Act
+            eventFiredMock.Build();
+
+            // Assert
+            eventFiredMock.OnPostBuildEventFired.ShouldBeTrue();
+        }
+
+        [Test]
+        public void Build_method_should_cause_PostBuildEvent_to_populate_eventArgs()
+        {
+            // Arrange
+            var eventFiredMock = new BuilderEventFiredMock();
+
+            // Act
+            var dummy = eventFiredMock.Build();
+
+            // Assert
+            dummy.ShouldNotBeNull();
+            eventFiredMock.PostBuildEventArgs.ShouldNotBeNull();
+            eventFiredMock.PostBuildEventArgs.BuiltObject.ShouldNotBeNull();
+            dummy.ShouldEqual(eventFiredMock.PostBuildEventArgs.BuiltObject);
+        }
     }
 }

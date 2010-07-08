@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace TestifyTDD.Helpers
 {
-    public class PropertyHelper<TDOMAIN, TDOMAINBASE> where TDOMAIN : TDOMAINBASE
+    public class PropertyHelper<TDOMAIN>
     {
         private const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public;
         

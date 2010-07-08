@@ -10,12 +10,12 @@ namespace Tests
     [TestFixture]
     public class PropertHelperSpec
     {
-        private PropertyHelper<Address, UnitTestDomainBase> _helper;
+        private PropertyHelper<Address> _helper;
         
         [SetUp]
         public void SetUp()
         {
-            _helper = new PropertyHelper<Address, UnitTestDomainBase>();
+            _helper = new PropertyHelper<Address>();
         }
 
         [Test]

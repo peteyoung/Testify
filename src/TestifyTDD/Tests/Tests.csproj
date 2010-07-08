@@ -67,7 +67,6 @@
     <Compile Include="TestDataBuilderSpec.cs" />
     <Compile Include="TestDataBuilders\AddressBuilder.cs" />
     <Compile Include="TestDataBuilders\HouseholdBuilder.cs" />
-    <Compile Include="TestDataBuilders\UnitTestTestDataBuilder.cs" />
     <Compile Include="TestingDomain\Address.cs" />
     <Compile Include="TestingDomain\AddressBook.cs" />
     <Compile Include="TestingDomain\Household.cs" />

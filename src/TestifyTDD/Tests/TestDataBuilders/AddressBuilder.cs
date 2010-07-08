@@ -1,9 +1,10 @@
+using TestifyTDD;
 using Tests.TestingDomain;
 
 namespace Tests.TestDataBuilders
 {
     internal class AddressBuilder :
-        UnitTestTestDataBuilder<Address, AddressBuilder>
+        TestDataBuilder<Address, AddressBuilder>
     {
         public AddressBuilder()
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -12,11 +13,21 @@ namespace TestifyTDD
         private Dictionary<PropertyInfo, object> _propertyValues = 
             new Dictionary<PropertyInfo, object>();
 
+        private CollectionTypeMapper _mapper = new CollectionTypeMapper();
+
         protected PropertyHelper<TDOMAIN> _helper = new PropertyHelper<TDOMAIN>();
         
         public TestDataBuilder()
         {
             PostBuildEvent += OnPostBuild;
+
+            MapTypes();
+        }
+
+        private void MapTypes()
+        {
+            _mapper.Map(typeof(IList), typeof(ArrayList));
+            _mapper.Map(typeof(IList<>), typeof(List<>));
         }
 
         public virtual TDOMAIN Build()
@@ -34,6 +45,8 @@ namespace TestifyTDD
 
                 if (IsITestDataBuilder(value))
                     setter(domainObj, GetValueFromBuilder(value));
+                else if (IsITestDataBuilderList(value))
+                    setter(domainObj, CreateEnumerableFromBuilderList(propertyInfo.PropertyType, value));
                 else
                     setter(domainObj, value);
             }
@@ -67,7 +80,6 @@ namespace TestifyTDD
 
         // TRETURNS is the return type of property
         // TDOMAIN is the type of the class with property as a member
-        // TDOMAINBASE is the type that all types of TDOMAIN inherit from (base domain class)
         // TBUILDER is the type of the builder that builds TDOMAIN
 
         /**
@@ -101,9 +113,10 @@ namespace TestifyTDD
          * specified on the property.
          */
         public TTHIS Withs<TRETURNS, TSUBDOMAIN>(
-            Expression<Func<TDOMAIN, TRETURNS>> property,
+            //Expression<Func<TDOMAIN, TRETURNS>> property,
+            Expression<Func<TDOMAIN, IList<TRETURNS>>> property,
             params TSUBDOMAIN[] values)
-            where TRETURNS : IList<TSUBDOMAIN>
+            //where TRETURNS : IList<TSUBDOMAIN>
         {
             var list = new List<TSUBDOMAIN>();
 
@@ -116,18 +129,74 @@ namespace TestifyTDD
             return (TTHIS)this;
         }
 
+        /**
+         * Creates a collection from a params array of builders and assigns it to a property. 
+         * The type of the values must match the generic parameter of the collection type 
+         * specified on the property.
+         */
+        public TTHIS WithBuilders<TRETURNSCOLLECTION, TBUILDER>(
+            Expression<Func<TDOMAIN, IList<TRETURNSCOLLECTION>>> property,
+            params ITestDataBuilder<TRETURNSCOLLECTION, TBUILDER>[] builders)
+            //where TRETURNS : IList<TSUBDOMAIN>
+        {
+            // Need to extract the generic parameter from TRETURNSCOLLECTION
+            // and use it in place of TRETURNSCOLLECTION below
+            var list = new List<ITestDataBuilder<TRETURNSCOLLECTION, TBUILDER>>();
+
+            foreach (var builder in builders)
+                list.Add(builder);
+
+            var propertyInfo = _helper.GetPropertyInfo(property);
+            SetPropertyValue(propertyInfo, list);
+
+            return (TTHIS)this;
+        }
+
         private object GetValueFromBuilder(object testDataBuilder)
         {
             // NOTE: value should have been vetted by IsITestDataBuilder() first
 
             var buildMethod = testDataBuilder
-                .GetType()
-                .GetMethod("Build",
-                           BindingFlags.Instance | BindingFlags.Public);
+                                .GetType()
+                                .GetMethod("Build",
+                                           BindingFlags.Instance | BindingFlags.Public);
 
             var value = buildMethod.Invoke(testDataBuilder, null);
 
             return value;
+        }
+
+        private IEnumerable CreateEnumerableFromBuilderList(Type collectionType, object builders)
+        {
+            /*
+            Since we don't know the exact collection type at runtime, 
+            we need to use reflection to create a new instance and to
+            populate it by invoking Add().
+             
+            I dedicate this section to my good friend J.R. "Dynamic Man" Garcia.
+            */
+
+            // Get collection type's parameterless constructor
+            var collectionConstructor = collectionType.GetConstructor(Type.EmptyTypes);
+            // TODO: Interfaces like IList, IList<T>, ISet<T> do not have constructors
+
+            // Create instance of collection
+            var collection = collectionConstructor.Invoke(new object[] {});
+
+            // Reflect the Add() method
+            var addMethod = collection
+                                .GetType()
+                                .GetMethod("Add",
+                                           BindingFlags.Instance | BindingFlags.Public);
+            
+            // Iterate builders and populate collection
+            foreach (var builder in (IEnumerable)builders)
+            {
+                var value = GetValueFromBuilder(builder);
+                addMethod.Invoke(collection, new[] {value});
+            }
+
+            return (IEnumerable)collection;
         }
 
         private bool IsITestDataBuilder(object mayBeBuilder)
@@ -145,6 +214,66 @@ namespace TestifyTDD
                 .GetInterface(iTestDataBuilderTypeDefinition.Name);
 
             return (iTestDataBuilderType != null);
+        }
+
+        private bool IsITestDataBuilderList(object mayBeBuilderList)
+        {
+            if (mayBeBuilderList == null)
+                return false;
+
+            if (! IsGenericList(mayBeBuilderList))
+                return false;
+
+            if (! IsListOfBuilders(mayBeBuilderList))
+                return false;
+
+            var typeToBeBuilt = GetTypeToBeBuiltFromListOfBuilders(mayBeBuilderList);
+
+            return (typeToBeBuilt != null);
+        }
+
+        private bool IsGenericList(object mayBeGenericList)
+        {
+            var iListTypeDefinition = typeof(IList<>);
+
+            var iListType = mayBeGenericList
+                .GetType()
+                .GetInterface(iListTypeDefinition.Name);
+
+            return (iListType != null);
+        }
+
+        private bool IsListOfBuilders(object mayBeBuilders)
+        {
+            var builderList = mayBeBuilders as IEnumerable;
+
+            if (builderList == null)
+                return false;
+
+            // IEnumerable doesn't support indexing so we cheat here
+            // and use Enumeration to get the first item.
+            foreach (var builder in builderList)
+                return IsITestDataBuilder(builder);
+
+            // We'll never reach here, but the compiler complains anyway
+            return false;
+        }
+
+        private Type GetTypeToBeBuiltFromListOfBuilders(object builderList)
+        {
+            var builderListType = builderList.GetType();
+
+            if (builderListType == null || builderListType.IsGenericType == false)
+                return null;
+
+            var builderInterfaceType = builderListType.GetGenericArguments()[0];
+
+            if (builderInterfaceType == null || builderInterfaceType.IsGenericType == false)
+                return null;
+
+            var typeToBeBuilt = builderInterfaceType.GetGenericArguments()[0];
+
+            return typeToBeBuilt;
         }
 
         public virtual TTHIS But 

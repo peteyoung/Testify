@@ -2,8 +2,8 @@
 using NUnit.Framework;
 using NBehave.Spec.NUnit;
 using TestifyTDD;
-using Tests.TestingDomain;
 using Tests.TestDataBuilders;
+using Tests.TestingDomain;
 
 namespace Tests
 {
@@ -61,6 +61,37 @@ namespace Tests
             CollectionAssert.AreEquivalent(
                 new List<Address> { address1, address2, address3, address4, address5 },
                 addressBook.Addresses);
+        }
+
+        [Test]
+        public void Should_assign_params_array_of_builders_to_collection_property_and_build_them()
+        {
+            // Arrange
+            var builder1 = new AddressBuilder();
+            var builder2 = new AddressBuilder();
+            var builder3 = new AddressBuilder();
+            var builder4 = new AddressBuilder();
+            var builder5 = new AddressBuilder();
+
+            var addressList = new List<Address>
+                                  {
+                                      builder1.Build(),
+                                      builder2.Build(),
+                                      builder3.Build(),
+                                      builder4.Build(),
+                                      builder5.Build(),
+                                  };
+
+            // Act
+            _builder.WithBuilders(ab => ab.Addresses, builder1, builder2, builder3, builder4, builder5);
+            var addressBook = _builder.Build();
+
+            // Assert
+            addressBook.ID.ShouldEqual(123L);
+            addressBook.Addresses.ShouldNotBeNull();
+            addressBook.Addresses.Count.ShouldEqual(5);
+
+            CollectionAssert.AreEquivalent(addressList, addressBook.Addresses);
         }
     }
 

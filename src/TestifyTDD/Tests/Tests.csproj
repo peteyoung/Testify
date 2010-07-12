@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionTypeMapperSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyHelperSpec.cs" />
     <Compile Include="TestDataBuilderCollectionSpec.cs" />

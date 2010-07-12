@@ -16,9 +16,14 @@ namespace TestifyTDD
             where TBUILDER : ITestDataBuilder<TRETURNS, TBUILDER>, new();
 
         TTHIS Withs<TRETURNS, TSUBDOMAIN>(
-            Expression<Func<TDOMAIN, TRETURNS>> property,
-            params TSUBDOMAIN[] values)
-            where TRETURNS : IList<TSUBDOMAIN>;
+            //Expression<Func<TDOMAIN, TRETURNS>> property,
+            Expression<Func<TDOMAIN, IList<TRETURNS>>> property,
+            params TSUBDOMAIN[] values);
+            //where TRETURNS : IList<TSUBDOMAIN>;
+
+        TTHIS WithBuilders<TRETURNS, TBUILDER>(
+            Expression<Func<TDOMAIN, IList<TRETURNS>>> property,
+            params ITestDataBuilder<TRETURNS, TBUILDER>[] builders);
 
         TTHIS But { get; }
     }

@@ -12,7 +12,6 @@ namespace Spikes
     public class CollectionTypeSpike
     {
         private Dictionary<Type, Type> _collectionTypeMap;
-        private CollectionsDummy _collectionsDummy;
 
         [SetUp]
         public void SetUp()
@@ -22,8 +21,6 @@ namespace Spikes
                                          {typeof (IList), typeof (ArrayList)},
                                          {typeof (IList<>), typeof (List<>)}
                                      };
-
-            _collectionsDummy = new CollectionsDummy();
         }
 
         [Test]
@@ -32,7 +29,8 @@ namespace Spikes
             // Arrange
             var propertyInfo = GetPropertyInfo<CollectionsDummy, IList>(c => c.IList);
             var propertyType = propertyInfo.PropertyType;
-            var typeToCreate = _collectionTypeMap.GetTypeByKey(propertyType);
+            Type typeToCreate;
+            _collectionTypeMap.TryGetValue(propertyType, out typeToCreate);
             var collectionConstructor = typeToCreate.GetConstructor(Type.EmptyTypes);
 
             // Act
@@ -51,7 +49,8 @@ namespace Spikes
             var propertyType = propertyInfo.PropertyType;
             var genericArguments = propertyType.GetGenericArguments();
             var genericTypeDef = propertyType.GetGenericTypeDefinition();
-            var mappedGenericTypeDef = _collectionTypeMap.GetTypeByKey(genericTypeDef);
+            Type mappedGenericTypeDef;
+            _collectionTypeMap.TryGetValue(genericTypeDef, out mappedGenericTypeDef);
             var instantiableGenericType = mappedGenericTypeDef.MakeGenericType(genericArguments);
             var collectionConstructor = instantiableGenericType.GetConstructor(Type.EmptyTypes);
 
@@ -83,16 +82,5 @@ namespace Spikes
     {
         public IList IList { get; set; }
         public IList<string> IListString { get; set; }
-    }
-
-    public static class MapTypes
-    {
-        public static Type GetTypeByKey(this Dictionary<Type, Type> dictionary, Type keyType)
-        {
-            if (! dictionary.ContainsKey(keyType))
-                return null;
-
-            return dictionary[keyType];
-        }
     }
 }

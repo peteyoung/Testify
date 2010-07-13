@@ -10,7 +10,7 @@ namespace Tests
     [TestFixture]
     public class PropertHelperSpec
     {
-        private PropertyHelper<Address> _helper;
+        private IPropertyHelper<Address> _helper;
         
         [SetUp]
         public void SetUp()

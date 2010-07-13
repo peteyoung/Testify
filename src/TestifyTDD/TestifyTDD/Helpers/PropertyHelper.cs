@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace TestifyTDD.Helpers
 {
-    public class PropertyHelper<TDOMAIN>
+    public class PropertyHelper<TDOMAIN> : IPropertyHelper<TDOMAIN>
     {
         private const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Public;
         
@@ -24,6 +24,9 @@ namespace TestifyTDD.Helpers
 
             var memberExpression = (MemberExpression)body;
             var member = memberExpression.Member;
+
+            // Sometimes a property may exist on a superclass instead of the one we're
+            // really interested in. Here is where we cast down to the subclass.
             var propertyInfo = CastPropertyInfoDown((PropertyInfo)member);
 
             return propertyInfo;

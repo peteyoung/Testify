@@ -91,7 +91,25 @@ namespace Tests
             addressBook.Addresses.ShouldNotBeNull();
             addressBook.Addresses.Count.ShouldEqual(5);
 
-            CollectionAssert.AreEquivalent(addressList, addressBook.Addresses);
+            // NOTE: The instances in addressList and addressBook.Addresses, while in
+            //       the same order are actually separate instances with different
+            //       hashcodes. We can't use CollectionAssert because of that
+            //
+            //CollectionAssert.AreEquivalent(addressList, addressBook.Addresses);
+            //
+            // Since we're using List<> as the implementation for IList<>, we can 
+            // rely on the order being the same.
+            for (var i = 0; i < addressList.Count; i++)
+            {
+                addressBook.Addresses[i].IsInUsa.ShouldEqual(addressList[i].IsInUsa);
+                addressBook.Addresses[i].Latitude.ShouldEqual(addressList[i].Latitude);
+                addressBook.Addresses[i].Longitude.ShouldEqual(addressList[i].Longitude);
+                addressBook.Addresses[i].LotNumber.ShouldEqual(addressList[i].LotNumber);
+                addressBook.Addresses[i].LotSquareFootage.ShouldEqual(addressList[i].LotSquareFootage);
+                addressBook.Addresses[i].StreetAddress_1.ShouldEqual(addressList[i].StreetAddress_1);
+                addressBook.Addresses[i].StreetAddress_2.ShouldEqual(addressList[i].StreetAddress_2);
+                addressBook.Addresses[i].StreetNumber.ShouldEqual(addressList[i].StreetNumber);
+            }
         }
     }
 

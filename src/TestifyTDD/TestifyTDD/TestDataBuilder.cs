@@ -13,21 +13,28 @@ namespace TestifyTDD
         private Dictionary<PropertyInfo, object> _propertyValues = 
             new Dictionary<PropertyInfo, object>();
 
-        private CollectionTypeMapper _mapper = new CollectionTypeMapper();
+        private ICollectionTypeMapper _mapper;
 
-        protected PropertyHelper<TDOMAIN> _helper = new PropertyHelper<TDOMAIN>();
-        
-        public TestDataBuilder()
+        protected IPropertyHelper<TDOMAIN> _helper;
+
+        // Yes I know this is Poor Man's DI, but I'm not sure if I want to involve
+        // a DI container/tool when the TDBs may be used in context with another
+        // (or the same) DI container/tool. I also have reservations about
+        // embedding a factory.
+        public TestDataBuilder() : 
+            this(CollectionTypeMapper.CreateDefaultMapper(), 
+                new PropertyHelper<TDOMAIN>())
+        {
+        }
+
+        public TestDataBuilder(
+            ICollectionTypeMapper mapper,
+            IPropertyHelper<TDOMAIN> propertyHelper)
         {
             PostBuildEvent += OnPostBuild;
 
-            MapTypes();
-        }
-
-        private void MapTypes()
-        {
-            _mapper.Map(typeof(IList), typeof(ArrayList));
-            _mapper.Map(typeof(IList<>), typeof(List<>));
+            _mapper = mapper;
+            _helper = propertyHelper;
         }
 
         public virtual TDOMAIN Build()
@@ -107,6 +114,8 @@ namespace TestifyTDD
             return (TTHIS)this;
         }
 
+        // TODO: With for adding a collection of builders to a property
+
         /**
          * Creates a collection from a params array of values and assigns it to a property. 
          * The type of the values must match the generic parameter of the collection type 
@@ -176,9 +185,12 @@ namespace TestifyTDD
             I dedicate this section to my good friend J.R. "Dynamic Man" Garcia.
             */
 
+            // collectionType may be an interface. Lookup the implementation to 
+            // return using CollectionTypeMapper.
+            var instantiableType = _mapper.Resolve(collectionType);
+
             // Get collection type's parameterless constructor
-            var collectionConstructor = collectionType.GetConstructor(Type.EmptyTypes);
-            // TODO: Interfaces like IList, IList<T>, ISet<T> do not have constructors
+            var collectionConstructor = instantiableType.GetConstructor(Type.EmptyTypes);
 
             // Create instance of collection
             var collection = collectionConstructor.Invoke(new object[] {});

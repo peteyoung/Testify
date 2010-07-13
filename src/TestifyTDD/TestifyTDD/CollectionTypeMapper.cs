@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace TestifyTDD
 {
-    public class CollectionTypeMapper
+    public class CollectionTypeMapper : ICollectionTypeMapper
     {
         private Dictionary<Type, Type> _collectionTypeMap = new Dictionary<Type, Type>();
 
@@ -58,6 +59,16 @@ namespace TestifyTDD
                 return typeToResolve.GetGenericTypeDefinition();
 
             return typeToResolve;
+        }
+
+        public static CollectionTypeMapper CreateDefaultMapper()
+        {
+            var mapper = new CollectionTypeMapper();
+
+            mapper.Map(typeof(IList), typeof(ArrayList));
+            mapper.Map(typeof(IList<>), typeof(List<>));
+
+            return mapper;
         }
     }
 }

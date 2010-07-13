@@ -19,7 +19,7 @@ namespace Tests
         }
 
         [Test]
-        public void Should_assign_precreated_collection_to_property()
+        public void Should_assign_precreated_generic_collection_to_property()
         {
             // Arrange
             var address = new Address();

@@ -50,9 +50,9 @@ namespace TestifyTDD
                 var value = _propertyValues[propertyInfo];
                 var setter = _helper.GetValueSetter(propertyInfo);
 
-                if (IsITestDataBuilder(value))
+                if (IsTestDataBuilder(value))
                     setter(domainObj, GetValueFromBuilder(value));
-                else if (IsITestDataBuilderList(value))
+                else if (IsTestDataBuilderCollection(value))
                     setter(domainObj, CreateEnumerableFromBuilderList(propertyInfo.PropertyType, value));
                 else
                     setter(domainObj, value);
@@ -163,7 +163,7 @@ namespace TestifyTDD
 
         private object GetValueFromBuilder(object testDataBuilder)
         {
-            // NOTE: value should have been vetted by IsITestDataBuilder() first
+            // NOTE: value should have been vetted by IsTestDataBuilder() first
 
             var buildMethod = testDataBuilder
                                 .GetType()
@@ -211,7 +211,7 @@ namespace TestifyTDD
             return (IEnumerable)collection;
         }
 
-        private bool IsITestDataBuilder(object mayBeBuilder)
+        private bool IsTestDataBuilder(object mayBeBuilder)
         {
             if (mayBeBuilder == null)
                 return false;
@@ -228,64 +228,26 @@ namespace TestifyTDD
             return (iTestDataBuilderType != null);
         }
 
-        private bool IsITestDataBuilderList(object mayBeBuilderList)
+        private bool IsTestDataBuilderCollection(object mayBeBuilderCollection)
         {
-            if (mayBeBuilderList == null)
+            if (mayBeBuilderCollection == null)
                 return false;
 
-            if (! IsGenericList(mayBeBuilderList))
+            var builderCollection = mayBeBuilderCollection as IEnumerable;
+
+            if (builderCollection == null)
                 return false;
 
-            if (! IsListOfBuilders(mayBeBuilderList))
-                return false;
-
-            var typeToBeBuilt = GetTypeToBeBuiltFromListOfBuilders(mayBeBuilderList);
-
-            return (typeToBeBuilt != null);
-        }
-
-        private bool IsGenericList(object mayBeGenericList)
-        {
-            var iListTypeDefinition = typeof(IList<>);
-
-            var iListType = mayBeGenericList
-                .GetType()
-                .GetInterface(iListTypeDefinition.Name);
-
-            return (iListType != null);
-        }
-
-        private bool IsListOfBuilders(object mayBeBuilders)
-        {
-            var builderList = mayBeBuilders as IEnumerable;
-
-            if (builderList == null)
-                return false;
-
+            // NOTE: this is a good place to start with mixed collections
+            //       of classes and builders in a single collection
+            //
             // IEnumerable doesn't support indexing so we cheat here
             // and use Enumeration to get the first item.
-            foreach (var builder in builderList)
-                return IsITestDataBuilder(builder);
+            foreach (var builder in builderCollection)
+                return IsTestDataBuilder(builder);
 
             // We'll never reach here, but the compiler complains anyway
             return false;
-        }
-
-        private Type GetTypeToBeBuiltFromListOfBuilders(object builderList)
-        {
-            var builderListType = builderList.GetType();
-
-            if (builderListType == null || builderListType.IsGenericType == false)
-                return null;
-
-            var builderInterfaceType = builderListType.GetGenericArguments()[0];
-
-            if (builderInterfaceType == null || builderInterfaceType.IsGenericType == false)
-                return null;
-
-            var typeToBeBuilt = builderInterfaceType.GetGenericArguments()[0];
-
-            return typeToBeBuilt;
         }
 
         public virtual TTHIS But 

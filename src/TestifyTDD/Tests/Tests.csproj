@@ -62,9 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionTypeMapperSpec.cs" />
+    <Compile Include="TestDataBuilderNonGenericCollectionSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyHelperSpec.cs" />
-    <Compile Include="TestDataBuilderCollectionSpec.cs" />
+    <Compile Include="TestDataBuilderGenericCollectionSpec.cs" />
     <Compile Include="TestDataBuilderSpec.cs" />
     <Compile Include="TestDataBuilders\AddressBuilder.cs" />
     <Compile Include="TestDataBuilders\BuilderEventFiredMock.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="TestingDomain\Address.cs" />
     <Compile Include="TestingDomain\AddressBook.cs" />
     <Compile Include="TestingDomain\BuilderEventFiredDummy.cs" />
+    <Compile Include="TestingDomain\OldAddressBook.cs" />
     <Compile Include="TestingDomain\Household.cs" />
     <Compile Include="TestingDomain\UnitTestDomainBase.cs" />
     <Compile Include="TestBase.cs" />

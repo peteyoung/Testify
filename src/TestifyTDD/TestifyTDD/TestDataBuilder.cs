@@ -121,11 +121,9 @@ namespace TestifyTDD
          * The type of the values must match the generic parameter of the collection type 
          * specified on the property.
          */
-        public TTHIS Withs<TRETURNS, TSUBDOMAIN>(
-            //Expression<Func<TDOMAIN, TRETURNS>> property,
-            Expression<Func<TDOMAIN, IList<TRETURNS>>> property,
+        public TTHIS Withs<TSUBDOMAIN>(
+            Expression<Func<TDOMAIN, IEnumerable>> property,
             params TSUBDOMAIN[] values)
-            //where TRETURNS : IList<TSUBDOMAIN>
         {
             var list = new List<TSUBDOMAIN>();
 
@@ -144,7 +142,7 @@ namespace TestifyTDD
          * specified on the property.
          */
         public TTHIS WithBuilders<TRETURNSCOLLECTION, TBUILDER>(
-            Expression<Func<TDOMAIN, IList<TRETURNSCOLLECTION>>> property,
+            Expression<Func<TDOMAIN, IEnumerable>> property,
             params ITestDataBuilder<TRETURNSCOLLECTION, TBUILDER>[] builders)
             //where TRETURNS : IList<TSUBDOMAIN>
         {
@@ -228,26 +226,29 @@ namespace TestifyTDD
             return (iTestDataBuilderType != null);
         }
 
-        private bool IsTestDataBuilderCollection(object mayBeBuilderCollection)
+        private bool IsTestDataBuilderCollection(object mayBeACollection)
         {
+            var mayBeBuilderCollection = mayBeACollection as IEnumerable;
+
             if (mayBeBuilderCollection == null)
-                return false;
-
-            var builderCollection = mayBeBuilderCollection as IEnumerable;
-
-            if (builderCollection == null)
                 return false;
 
             // NOTE: this is a good place to start with mixed collections
             //       of classes and builders in a single collection
-            //
-            // IEnumerable doesn't support indexing so we cheat here
-            // and use Enumeration to get the first item.
-            foreach (var builder in builderCollection)
-                return IsTestDataBuilder(builder);
+            var foundNonBuilder = false;
+            var foundBuilder = false;
 
-            // We'll never reach here, but the compiler complains anyway
-            return false;
+            foreach (var mayBeBuilder in mayBeBuilderCollection)
+                if (IsTestDataBuilder(mayBeBuilder))
+                    foundBuilder = true;
+                else
+                    foundNonBuilder = true;
+
+            if (foundBuilder & foundNonBuilder)
+                throw new ApplicationException(
+                    "Collections of test data can not be a mix of concrete objects and TestDataBuilders");
+
+            return foundBuilder;
         }
 
         public virtual TTHIS But 

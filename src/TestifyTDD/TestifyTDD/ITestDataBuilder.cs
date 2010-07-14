@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq.Expressions;
 
 namespace TestifyTDD
@@ -15,15 +15,13 @@ namespace TestifyTDD
             ITestDataBuilder<TRETURNS, TBUILDER> builder)
             where TBUILDER : ITestDataBuilder<TRETURNS, TBUILDER>, new();
 
-        TTHIS Withs<TRETURNS, TSUBDOMAIN>(
-            //Expression<Func<TDOMAIN, TRETURNS>> property,
-            Expression<Func<TDOMAIN, IList<TRETURNS>>> property,
+        TTHIS Withs<TSUBDOMAIN>(
+            Expression<Func<TDOMAIN, IEnumerable>> property,
             params TSUBDOMAIN[] values);
-            //where TRETURNS : IList<TSUBDOMAIN>;
 
-        TTHIS WithBuilders<TRETURNS, TBUILDER>(
-            Expression<Func<TDOMAIN, IList<TRETURNS>>> property,
-            params ITestDataBuilder<TRETURNS, TBUILDER>[] builders);
+        TTHIS WithBuilders<TRETURNSCOLLECTION, TBUILDER>(
+            Expression<Func<TDOMAIN, IEnumerable>> property,
+            params ITestDataBuilder<TRETURNSCOLLECTION, TBUILDER>[] builders);
 
         TTHIS But { get; }
     }

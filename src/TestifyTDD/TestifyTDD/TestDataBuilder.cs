@@ -233,6 +233,13 @@ namespace TestifyTDD
             if (mayBeBuilderCollection == null)
                 return false;
 
+            // string implements IEnumerable too (as do many other framework
+            // classes. This is a shortcut out of here since strings are so common.
+            var mayBeString = mayBeBuilderCollection as string;
+            
+            if (mayBeString != null)
+                return false;
+
             // NOTE: this is a good place to start with mixed collections
             //       of classes and builders in a single collection
             var foundNonBuilder = false;

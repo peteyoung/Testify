@@ -226,16 +226,19 @@ namespace TestifyTDD
             return (iTestDataBuilderType != null);
         }
 
-        private bool IsTestDataBuilderCollection(object mayBeACollection)
+        // Currently many types in the .NET framework implement IEnumerable.
+        // Not sure if this is a problem, or if we need to limit the types
+        // that TestDataBuilder considers a collection.
+        private bool IsTestDataBuilderCollection(object objectOfUnknownType)
         {
-            var mayBeBuilderCollection = mayBeACollection as IEnumerable;
+            var mayBeABuilderCollection = objectOfUnknownType as IEnumerable;
 
-            if (mayBeBuilderCollection == null)
+            if (mayBeABuilderCollection == null)
                 return false;
 
             // string implements IEnumerable too (as do many other framework
             // classes. This is a shortcut out of here since strings are so common.
-            var mayBeString = mayBeBuilderCollection as string;
+            var mayBeString = objectOfUnknownType as string;
             
             if (mayBeString != null)
                 return false;
@@ -245,7 +248,7 @@ namespace TestifyTDD
             var foundNonBuilder = false;
             var foundBuilder = false;
 
-            foreach (var mayBeBuilder in mayBeBuilderCollection)
+            foreach (var mayBeBuilder in mayBeABuilderCollection)
                 if (IsTestDataBuilder(mayBeBuilder))
                     foundBuilder = true;
                 else
@@ -253,7 +256,7 @@ namespace TestifyTDD
 
             if (foundBuilder & foundNonBuilder)
                 throw new ApplicationException(
-                    "Collections of test data can not be a mix of concrete objects and TestDataBuilders");
+                    "Collections of test data cannot be a mix of concrete objects and TestDataBuilders");
 
             return foundBuilder;
         }

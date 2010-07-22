@@ -64,10 +64,13 @@ namespace TestifyTDD.Helpers
 
             // ReflectedType should have been cast down to TDOMAIN in GetPropertyInfo 
             // if the DeclaringType is a super-type of TDOMAIN
-            var instance = Expression.Parameter(propertyInfo.ReflectedType, "i");
+            var instance = Expression.Parameter(propertyInfo.ReflectedType, "i"); // "i" is for debuggin purposes only
 
-            var argument = Expression.Parameter(typeof(object), "a");
+            var argument = Expression.Parameter(typeof(object), "a"); // "a" is for debuggin purposes only
             var setMethod = propertyInfo.GetSetMethod(true); // true brings back non-public setters
+
+            // Because the argument is of type 'object', we'll need to cast it to the proper type
+            // that matches the property's type in the Expression Tree we're builing
             var argumentCast = Expression.Convert(argument, propertyInfo.PropertyType);
 
             if (setMethod == null)

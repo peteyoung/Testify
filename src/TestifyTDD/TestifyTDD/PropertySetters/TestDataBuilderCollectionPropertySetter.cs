@@ -108,6 +108,8 @@ namespace TestifyTDD.PropertySetters
             var foundNonBuilder = false;
             var foundBuilder = false;
 
+            var itemCount = 0;
+
             // look for the builder interface on all objects in this collection.
             // flag both cases where we do and do not have a builder
             foreach (var mayBeBuilder in mayBeABuilderCollection)
@@ -118,6 +120,7 @@ namespace TestifyTDD.PropertySetters
 
                 foundBuilder |= builder != null;
                 foundNonBuilder |= builder == null;
+                itemCount += 1;
             }
 
             if (foundBuilder & foundNonBuilder)
@@ -127,6 +130,10 @@ namespace TestifyTDD.PropertySetters
             if (!foundBuilder)
                 throw new ApplicationException(
                     "This is not a collection of TestDataBuilders");
+
+            if (itemCount < 1)
+                throw new ApplicationException(
+                    "The TestDataBuilder collection was empty.");
         }
     }
 }

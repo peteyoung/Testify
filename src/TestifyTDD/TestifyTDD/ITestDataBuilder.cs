@@ -4,7 +4,9 @@ using System.Linq.Expressions;
 
 namespace TestifyTDD
 {
-    public interface ITestDataBuilder<TDOMAIN, TTHIS>
+    public interface ITestDataBuilder {} // Marker interface for extension methods
+
+    public interface ITestDataBuilder<TDOMAIN, TTHIS> : ITestDataBuilder
     {
         TDOMAIN Build();
 

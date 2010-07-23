@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using TestifyTDD.Helpers;
+using TestifyTDD.PropertySetters;
 
 namespace TestifyTDD
 {
@@ -13,8 +14,6 @@ namespace TestifyTDD
         private Dictionary<PropertyInfo, object> _propertyValues = 
             new Dictionary<PropertyInfo, object>();
 
-        private ICollectionTypeMapper _mapper;
-
         protected IPropertyHelper<TDOMAIN> _helper;
 
         // Yes I know this is Poor Man's DI, but I'm not sure if I want to involve
@@ -22,18 +21,14 @@ namespace TestifyTDD
         // (or the same) DI container/tool. I also have reservations about
         // embedding a factory.
         public TestDataBuilder() : 
-            this(CollectionTypeMapper.CreateDefaultMapper(), 
-                new PropertyHelper<TDOMAIN>())
+            this(new PropertyHelper<TDOMAIN>())
         {
         }
 
-        public TestDataBuilder(
-            ICollectionTypeMapper mapper,
-            IPropertyHelper<TDOMAIN> propertyHelper)
+        public TestDataBuilder(IPropertyHelper<TDOMAIN> propertyHelper)
         {
             PostBuildEvent += OnPostBuild;
 
-            _mapper = mapper;
             _helper = propertyHelper;
         }
 
@@ -48,14 +43,16 @@ namespace TestifyTDD
             foreach (var propertyInfo in _propertyValues.Keys)
             {
                 var value = _propertyValues[propertyInfo];
-                var setter = _helper.GetValueSetter(propertyInfo);
 
                 if (IsTestDataBuilder(value))
-                    setter(domainObj, GetValueFromBuilder(value));
+                    (new TestDataBuilderPropertySetter<TDOMAIN>())
+                        .SetValueOnProperty(propertyInfo, domainObj, value);
                 else if (IsTestDataBuilderCollection(value))
-                    setter(domainObj, CreateEnumerableFromBuilderList(propertyInfo.PropertyType, value));
+                    (new TestDataBuilderCollectionPropertySetter<TDOMAIN>())
+                        .SetValueOnProperty(propertyInfo, domainObj, value);
                 else
-                    setter(domainObj, value);
+                    (new PassthroughPropertySetter<TDOMAIN>())
+                        .SetValueOnProperty(propertyInfo, domainObj, value);
             }
 
             FireOnPostBuild(domainObj);
@@ -157,56 +154,6 @@ namespace TestifyTDD
             SetPropertyValue(propertyInfo, list);
 
             return (TTHIS)this;
-        }
-
-        private object GetValueFromBuilder(object testDataBuilder)
-        {
-            // NOTE: value should have been vetted by IsTestDataBuilder() first
-
-            var buildMethod = testDataBuilder
-                                .GetType()
-                                .GetMethod("Build",
-                                           BindingFlags.Instance | BindingFlags.Public);
-
-            var value = buildMethod.Invoke(testDataBuilder, null);
-
-            return value;
-        }
-
-        private IEnumerable CreateEnumerableFromBuilderList(Type collectionType, object builders)
-        {
-            /*
-            Since we don't know the exact collection type at runtime, 
-            we need to use reflection to create a new instance and to
-            populate it by invoking Add().
-             
-            I dedicate this section to my good friend J.R. "Dynamic Man" Garcia.
-            */
-
-            // collectionType may be an interface. Lookup the implementation to 
-            // return using CollectionTypeMapper.
-            var instantiableType = _mapper.Resolve(collectionType);
-
-            // Get collection type's parameterless constructor
-            var collectionConstructor = instantiableType.GetConstructor(Type.EmptyTypes);
-
-            // Create instance of collection
-            var collection = collectionConstructor.Invoke(new object[] {});
-
-            // Reflect the Add() method
-            var addMethod = collection
-                                .GetType()
-                                .GetMethod("Add",
-                                           BindingFlags.Instance | BindingFlags.Public);
-            
-            // Iterate builders and populate collection
-            foreach (var builder in (IEnumerable)builders)
-            {
-                var value = GetValueFromBuilder(builder);
-                addMethod.Invoke(collection, new[] {value});
-            }
-
-            return (IEnumerable)collection;
         }
 
         private bool IsTestDataBuilder(object mayBeBuilder)

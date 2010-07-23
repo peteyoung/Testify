@@ -51,7 +51,7 @@ namespace TestifyTDD
                     (new TestDataBuilderCollectionPropertySetter<TDOMAIN>())
                         .SetValueOnProperty(propertyInfo, domainObj, value);
                 else
-                    (new PassthroughPropertySetter<TDOMAIN>())
+                    (new PassthroughPropertySetter<TDOMAIN>(new PropertyHelper<TDOMAIN>()))
                         .SetValueOnProperty(propertyInfo, domainObj, value);
             }
 

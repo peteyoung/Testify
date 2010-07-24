@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using TestifyTDD.Helpers;
 
 namespace TestifyTDD.PropertySetters
 {
-    public class PropertySetterFactory
+    public interface IPropertySetterFactory
+    {
+        IPropertySetter<T> GetPropertySetter<T>(object value);
+    }
+
+    public class PropertySetterFactory : IPropertySetterFactory
     {
         public IPropertySetter<T> GetPropertySetter<T>(object value)
         {

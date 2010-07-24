@@ -15,21 +15,26 @@ namespace TestifyTDD
             new Dictionary<PropertyInfo, object>();
 
         protected IPropertyHelper<TDOMAIN> _helper;
+        protected IPropertySetterFactory _propertySetterFactory;
 
         // Yes I know this is Poor Man's DI, but I'm not sure if I want to involve
         // a DI container/tool when the TDBs may be used in context with another
         // (or the same) DI container/tool. I also have reservations about
         // embedding a factory.
-        public TestDataBuilder() : 
-            this(new PropertyHelper<TDOMAIN>())
+        public TestDataBuilder() : this(
+            new PropertyHelper<TDOMAIN>(),
+            new PropertySetterFactory())
         {
         }
 
-        public TestDataBuilder(IPropertyHelper<TDOMAIN> propertyHelper)
+        public TestDataBuilder(
+            IPropertyHelper<TDOMAIN> propertyHelper,
+            IPropertySetterFactory propertySetterFactory)
         {
             PostBuildEvent += OnPostBuild;
 
             _helper = propertyHelper;
+            _propertySetterFactory = propertySetterFactory;
         }
 
         public virtual TDOMAIN Build()
@@ -43,16 +48,8 @@ namespace TestifyTDD
             foreach (var propertyInfo in _propertyValues.Keys)
             {
                 var value = _propertyValues[propertyInfo];
-
-                if (IsTestDataBuilder(value))
-                    (new TestDataBuilderPropertySetter<TDOMAIN>())
-                        .SetValueOnProperty(propertyInfo, domainObj, value);
-                else if (IsTestDataBuilderCollection(value))
-                    (new TestDataBuilderCollectionPropertySetter<TDOMAIN>())
-                        .SetValueOnProperty(propertyInfo, domainObj, value);
-                else
-                    (new PassthroughPropertySetter<TDOMAIN>(new PropertyHelper<TDOMAIN>()))
-                        .SetValueOnProperty(propertyInfo, domainObj, value);
+                var propertySetter = _propertySetterFactory.GetPropertySetter<TDOMAIN>(value);
+                propertySetter.SetValueOnProperty(propertyInfo, domainObj, value);
             }
 
             FireOnPostBuild(domainObj);
@@ -154,58 +151,6 @@ namespace TestifyTDD
             SetPropertyValue(propertyInfo, list);
 
             return (TTHIS)this;
-        }
-
-        private bool IsTestDataBuilder(object mayBeBuilder)
-        {
-            if (mayBeBuilder == null)
-                return false;
-
-            if (mayBeBuilder.GetType().IsValueType)
-                return false;
-
-            var iTestDataBuilderTypeDefinition = typeof(ITestDataBuilder<,>);
-
-            var iTestDataBuilderType = mayBeBuilder
-                .GetType()
-                .GetInterface(iTestDataBuilderTypeDefinition.Name);
-
-            return (iTestDataBuilderType != null);
-        }
-
-        // Currently many types in the .NET framework implement IEnumerable.
-        // Not sure if this is a problem, or if we need to limit the types
-        // that TestDataBuilder considers a collection.
-        private bool IsTestDataBuilderCollection(object objectOfUnknownType)
-        {
-            var mayBeABuilderCollection = objectOfUnknownType as IEnumerable;
-
-            if (mayBeABuilderCollection == null)
-                return false;
-
-            // string implements IEnumerable too (as do many other framework
-            // classes. This is a shortcut out of here since strings are so common.
-            var mayBeString = objectOfUnknownType as string;
-            
-            if (mayBeString != null)
-                return false;
-
-            // NOTE: this is a good place to start with mixed collections
-            //       of classes and builders in a single collection
-            var foundNonBuilder = false;
-            var foundBuilder = false;
-
-            foreach (var mayBeBuilder in mayBeABuilderCollection)
-                if (IsTestDataBuilder(mayBeBuilder))
-                    foundBuilder = true;
-                else
-                    foundNonBuilder = true;
-
-            if (foundBuilder & foundNonBuilder)
-                throw new ApplicationException(
-                    "Collections of test data cannot be a mix of concrete objects and TestDataBuilders");
-
-            return foundBuilder;
         }
 
         public virtual TTHIS But 

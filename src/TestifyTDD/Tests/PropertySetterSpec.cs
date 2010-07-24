@@ -314,5 +314,20 @@ namespace Tests
                         _household,
                         naughtyList));
         }
+
+        [Test]
+        public void Should_throw_ApplicationException_with_empty_generic_collection()
+        {
+            // Arrange
+            var naughtyList = new List<Address>();
+
+            // Act & Assert
+            Assert.Throws<ApplicationException>(
+                () =>
+                    _neighborsSetter.SetValueOnProperty(
+                        _neighborsPropertyInfo,
+                        _household,
+                        naughtyList));
+        }
     }
 }

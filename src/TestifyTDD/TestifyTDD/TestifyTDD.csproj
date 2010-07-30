@@ -45,10 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollectionTypeMapper.cs" />
+    <Compile Include="TypeMapper.cs" />
+    <Compile Include="DITool\DIT.cs" />
     <Compile Include="Helpers\IPropertyHelper.cs" />
     <Compile Include="Helpers\PropertyHelper.cs" />
-    <Compile Include="ICollectionTypeMapper.cs" />
+    <Compile Include="ITypeMapper.cs" />
     <Compile Include="ITestDataBuilder.cs" />
     <Compile Include="PostBuildEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

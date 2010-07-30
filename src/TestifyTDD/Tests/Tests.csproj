@@ -62,7 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuilderExtensionsForSettersSpec.cs" />
-    <Compile Include="CollectionTypeMapperSpec.cs" />
+    <Compile Include="TypeMapperSpec.cs" />
+    <Compile Include="DITSpec.cs" />
     <Compile Include="IEnumerableExtensionsSpec.cs" />
     <Compile Include="PropertySetterFactorySpec.cs" />
     <Compile Include="PropertySetterSpec.cs" />

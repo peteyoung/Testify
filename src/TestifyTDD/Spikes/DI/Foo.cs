@@ -28,9 +28,37 @@ namespace Spikes.DI.Bar
     }
 }
 
+namespace Spikes.DI.IFizz
+{
+    public interface IFizz
+    {
+    }
+}
+
+namespace Spikes.DI.Not.In.I.Fizz
+{
+    public class Fizz : Spikes.DI.IFizz.IFizz
+    {
+    }
+}
+
 namespace Spikes.DI.Lonely
 {
     public interface IAmLonely
     {
     }
+}
+
+namespace Spikes.DI.IFozz.Generic
+{
+    public interface IFozz<T>
+    {
+        void FozzIt(T fooz);
+    }
+
+    public class Fozz<T> : IFozz<T>
+    {
+        public void FozzIt(T fooz) { }
+    }
+
 }

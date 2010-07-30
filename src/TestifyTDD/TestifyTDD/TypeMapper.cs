@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace TestifyTDD
 {
-    public class CollectionTypeMapper : ICollectionTypeMapper
+    public class TypeMapper : ITypeMapper
     {
-        private Dictionary<Type, Type> _collectionTypeMap = new Dictionary<Type, Type>();
+        private Dictionary<Type, Type> _typeMap = new Dictionary<Type, Type>();
 
         public void Map(Type interface_, Type type)
         {
@@ -17,7 +17,7 @@ namespace TestifyTDD
                     "interface_ must actually be a type that is an interface. {0} is a concrete type",
                     interface_.Name));
             
-            _collectionTypeMap.Add(interface_, type);
+            _typeMap.Add(interface_, type);
         }
 
         public Type Resolve(Type typeToResolve)
@@ -30,12 +30,12 @@ namespace TestifyTDD
             // a generic type definition
             var typeKey = GetTypeKey(typeToResolve);
 
-            if (!_collectionTypeMap.ContainsKey(typeKey))
+            if (!_typeMap.ContainsKey(typeKey))
                 throw new ApplicationException(string.Format(
-                    "There is no entry mapped from interface {0}",
+                    "There is no entry mapped for interface {0}",
                     typeKey.Name));
 
-            var mappedType = _collectionTypeMap[typeKey];
+            var mappedType = _typeMap[typeKey];
 
             // Non-generic types get returned at this point
             if (! mappedType.IsGenericTypeDefinition)
@@ -61,9 +61,9 @@ namespace TestifyTDD
             return typeToResolve;
         }
 
-        public static CollectionTypeMapper CreateDefaultMapper()
+        public static TypeMapper CreateDefaultMapper()
         {
-            var mapper = new CollectionTypeMapper();
+            var mapper = new TypeMapper();
 
             mapper.Map(typeof(IList), typeof(ArrayList));
             mapper.Map(typeof(IList<>), typeof(List<>));

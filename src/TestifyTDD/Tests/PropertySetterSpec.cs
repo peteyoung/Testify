@@ -141,7 +141,7 @@ namespace Tests
         private IList<ITestDataBuilder<Address, AddressBuilder>> _addressBuilders;
         private IPropertySetter<Household> _neighborsSetter;
         private IPropertyHelper<Household> _propertyHelper;
-        private ICollectionTypeMapper _collectionMapper;
+        private ITypeMapper _typeMapper;
 
         [SetUp]
         public void SetUp()
@@ -178,15 +178,15 @@ namespace Tests
                 .Expect(ph => ph.GetValueSetter(_neighborsPropertyInfo))
                 .Return(neighborsSetterAction);
 
-            _collectionMapper = M<ICollectionTypeMapper>();
-            _collectionMapper
+            _typeMapper = M<ITypeMapper>();
+            _typeMapper
                 .Expect(cm => cm.Resolve(typeof (IList<Address>)))
                 .Return(typeof (List<Address>));
 
             _neighborsSetter = 
                 new TestDataBuilderCollectionPropertySetter<Household>(
                     _propertyHelper,
-                    _collectionMapper);
+                    _typeMapper);
         }
 
         [Test]
@@ -205,7 +205,7 @@ namespace Tests
             _addressBuilder_2.VerifyAllExpectations();
             _addressBuilder_3.VerifyAllExpectations();
             _propertyHelper.VerifyAllExpectations();
-            _collectionMapper.VerifyAllExpectations();
+            _typeMapper.VerifyAllExpectations();
 
             _household.Neighbors.ShouldNotBeNull();
             CollectionAssert.AreEquivalent(_neighbors, _household.Neighbors);

@@ -8,14 +8,14 @@ using TestifyTDD;
 namespace Tests
 {
     [TestFixture]
-    public class CollectionTypeMapperSpec
+    public class TypeMapperSpec
     {
-        private CollectionTypeMapper _mapper;
+        private TypeMapper _mapper;
         
         [SetUp]
         public void SetUp()
         {
-            _mapper = new CollectionTypeMapper();
+            _mapper = new TypeMapper();
 
             _mapper.Map(typeof (IList), typeof (ArrayList));
             _mapper.Map(typeof (IList<>), typeof (List<>));

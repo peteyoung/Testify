@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionTypeMapperSpec.cs" />
+    <Compile Include="IEnumerableExtensionsSpec.cs" />
     <Compile Include="PropertySetterFactorySpec.cs" />
     <Compile Include="PropertySetterSpec.cs" />
     <Compile Include="TestDataBuilderNonGenericCollectionSpec.cs" />

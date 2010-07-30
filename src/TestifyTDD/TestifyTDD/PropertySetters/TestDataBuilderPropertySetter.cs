@@ -20,19 +20,17 @@ namespace TestifyTDD.PropertySetters
         public void SetValueOnProperty(PropertyInfo propertyInfo, T instance, object value)
         {
             ValidateValueIsOfTypeTestDataBuilder(value);
-            var builder = (ITestDataBuilder) value;
+            var builder = value as ITestDataBuilder;
             
             var setter = _propertyHelper.GetValueSetter(propertyInfo);
-            var valueFromBuilder = builder.CallBuildMethod();
+            var valueFromBuilder = builder.InvokeBuildMethod();
 
             setter(instance, valueFromBuilder);
         }
 
         private void ValidateValueIsOfTypeTestDataBuilder(object value)
         {
-            var builder = value
-                .GetType()
-                .GetInterface(typeof (ITestDataBuilder<,>).Name);
+            var builder = value as ITestDataBuilder;
 
             if (builder == null)
                 throw new ApplicationException(

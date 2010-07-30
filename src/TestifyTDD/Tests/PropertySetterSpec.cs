@@ -220,9 +220,23 @@ namespace Tests
             Assert.Throws<ArgumentException>(
                 () =>
                     _neighborsSetter.SetValueOnProperty(
-                        _neighborsPropertyInfo, 
-                        _household, 
+                        _neighborsPropertyInfo,
+                        _household,
                         null));
+        }
+
+        [Test]
+        public void Should_throw_ArgumentException_with_non_IEnumerable()
+        {
+            // Arrange
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(
+                () =>
+                    _neighborsSetter.SetValueOnProperty(
+                        _neighborsPropertyInfo,
+                        _household,
+                        new object()));
         }
 
         [Test]

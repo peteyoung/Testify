@@ -5,7 +5,7 @@ namespace TestifyTDD.PropertySetters
     public static class BuilderExtensionsForSetters
     {
         // TODO change the signature from T Build() to object Build(). Then get rid of this?
-        public static object CallBuildMethod(this ITestDataBuilder builder)
+        public static object InvokeBuildMethod(this ITestDataBuilder builder)
         {
             var buildMethod = builder
                                 .GetType()

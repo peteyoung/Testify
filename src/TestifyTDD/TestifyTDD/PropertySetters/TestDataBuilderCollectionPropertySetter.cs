@@ -39,13 +39,12 @@ namespace TestifyTDD.PropertySetters
         private IEnumerable CreateEnumerableFromBuilderList(Type collectionType, object builders)
         {
             var collection = CreateEnumerable(collectionType);
-            var addMethod = GetAddMethodFromCollection(collection);
 
             // Iterate builders, call Build(), and populate collection with built objects
-            foreach (var builder in (IEnumerable)builders)
+            foreach (ITestDataBuilder builder in (IEnumerable)builders)
             {
-                var value = ((ITestDataBuilder)builder).CallBuildMethod();
-                addMethod.Invoke(collection, new[] { value });
+                var value = builder.InvokeBuildMethod();
+                collection.InvokeAddMethodWith(value);
             }
 
             return collection;
@@ -73,55 +72,19 @@ namespace TestifyTDD.PropertySetters
 
             return (IEnumerable)collection;
         }
-
-        private MethodInfo GetAddMethodFromCollection(IEnumerable collection)
-        {
-            // Reflect the Add() method
-            var addMethod = collection
-                                .GetType()
-                                .GetMethod("Add",
-                                           BindingFlags.Instance | BindingFlags.Public);
-
-            return addMethod;
-        }
         
         private void ValidateValueIsCollectionOfTestDataBuilders(object value)
         {
-            var mayBeABuilderCollection = value as IEnumerable;
+            ValidateValueIsNotNull(value);
+            ValidateValueIsNotString(value);
+            ValidateValueIsIEnumerable(value);
 
-            if (mayBeABuilderCollection == null)
-                throw new ArgumentException(
-                    string.Format("A null value was passed into {0}",
-                                    this.GetType().Name));
-
-            // string implements IEnumerable too (as do many other framework
-            // classes. This is a shortcut out of here since strings are so common.
-            var mayBeString = value as string;
-
-            if (mayBeString != null)
-                throw new ArgumentException(
-                    string.Format("A value of type string/String was passed into {0}",
-                                    this.GetType().Name));
+            var collection = value as IEnumerable;
 
             // NOTE: this is a good place to start with mixed collections
             //       of classes and builders in a single collection
-            var foundNonBuilder = false;
-            var foundBuilder = false;
-
-            var itemCount = 0;
-
-            // look for the builder interface on all objects in this collection.
-            // flag both cases where we do and do not have a builder
-            foreach (var mayBeBuilder in mayBeABuilderCollection)
-            {
-                var builder = mayBeBuilder
-                    .GetType()
-                    .GetInterface(typeof (ITestDataBuilder<,>).Name);
-
-                foundBuilder |= builder != null;
-                foundNonBuilder |= builder == null;
-                itemCount += 1;
-            }
+            var foundNonBuilder = collection.ContainsNonBuilders();
+            var foundBuilder = collection.ContainsBuilders();
 
             if (foundBuilder & foundNonBuilder)
                 throw new ApplicationException(
@@ -131,9 +94,38 @@ namespace TestifyTDD.PropertySetters
                 throw new ApplicationException(
                     "This is not a collection of TestDataBuilders");
 
-            if (itemCount < 1)
+            if (collection.IsEmpty())
                 throw new ApplicationException(
                     "The TestDataBuilder collection was empty.");
+        }
+
+        private void ValidateValueIsNotString(object value)
+        {
+            // string implements IEnumerable too.
+            var mayBeString = value as string;
+
+            if (mayBeString != null)
+                throw new ArgumentException(
+                    string.Format("A value of type string/String was passed into {0}",
+                                  GetType().Name));
+        }
+
+        private void ValidateValueIsIEnumerable(object value)
+        {
+            var mayBeEnumerable = value as IEnumerable;
+
+            if (mayBeEnumerable == null)
+                throw new ArgumentException(
+                    string.Format("{0} is not IEnumerable",
+                                  GetType().Name));
+        }
+
+        private void ValidateValueIsNotNull(object value)
+        {
+            if (value == null)
+                throw new ArgumentException(
+                    string.Format("A null value was passed into {0}",
+                                    GetType().Name));
         }
     }
 }

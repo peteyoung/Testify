@@ -12,18 +12,13 @@ namespace TestifyTDD.PropertySetters
     {
         public IPropertySetter<T> GetPropertySetter<T>(object value)
         {
-            // TODO: Inject me!
-            var propertyHelper = new PropertyHelper<T>();
-
             if (IsTestDataBuilder(value))
-                return new TestDataBuilderPropertySetter<T>(propertyHelper);
+                return new TestDataBuilderPropertySetter<T>();
 
             if (IsTestDataBuilderCollection(value))
-                return new TestDataBuilderCollectionPropertySetter<T>(
-                    propertyHelper,
-                    CollectionTypeMapper.CreateDefaultMapper());
+                return new TestDataBuilderCollectionPropertySetter<T>();
             
-            return new PassthroughPropertySetter<T>(propertyHelper);
+            return new PassthroughPropertySetter<T>();
         }
 
         private bool IsTestDataBuilder(object mayBeBuilder)
@@ -34,13 +29,9 @@ namespace TestifyTDD.PropertySetters
             if (mayBeBuilder.GetType().IsValueType)
                 return false;
 
-            var iTestDataBuilderTypeDefinition = typeof(ITestDataBuilder<,>);
+            var builder = mayBeBuilder as ITestDataBuilder;
 
-            var iTestDataBuilderType = mayBeBuilder
-                .GetType()
-                .GetInterface(iTestDataBuilderTypeDefinition.Name);
-
-            return (iTestDataBuilderType != null);
+            return (builder != null);
         }
 
         // Currently many types in the .NET framework implement IEnumerable.

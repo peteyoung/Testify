@@ -7,6 +7,10 @@ namespace TestifyTDD.PropertySetters
     {
         private IPropertyHelper<T> _propertyHelper;
 
+        public PassthroughPropertySetter() : this(new PropertyHelper<T>())
+        {
+        }
+
         public PassthroughPropertySetter(IPropertyHelper<T> propertyHelper)
         {
             _propertyHelper = propertyHelper;

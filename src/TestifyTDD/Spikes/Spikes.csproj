@@ -54,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionTypeSpike.cs" />
+    <Compile Include="DI\DISpike.cs" />
+    <Compile Include="DI\Foo.cs" />
     <Compile Include="GeneralSpike.cs" />
     <Compile Include="GenericsSpike.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
+using TestifyTDD.DITool;
 using TestifyTDD.Helpers;
 
 namespace TestifyTDD.PropertySetters
@@ -8,22 +9,16 @@ namespace TestifyTDD.PropertySetters
     public class TestDataBuilderCollectionPropertySetter<T> : IPropertySetter<T>
     {
         private IPropertyHelper<T> _propertyHelper;
-        private ITypeMapper _mapper;
-
 
         public TestDataBuilderCollectionPropertySetter() : 
-            this(
-                new PropertyHelper<T>(),
-                TypeMapper.CreateDefaultMapper())
+            this(new PropertyHelper<T>())
         {
         }
 
         public TestDataBuilderCollectionPropertySetter(
-                IPropertyHelper<T> propertyHelper,
-                ITypeMapper mapper)
+                IPropertyHelper<T> propertyHelper)
         {
             _propertyHelper = propertyHelper;
-            _mapper = mapper;
         }
 
         public void SetValueOnProperty(PropertyInfo propertyInfo, T instance, object value)
@@ -62,7 +57,7 @@ namespace TestifyTDD.PropertySetters
 
             // collectionType may be an interface. Lookup the implementation to 
             // return using TypeMapper.
-            var instantiableType = _mapper.Resolve(collectionType);
+            var instantiableType = (new DIT()).CreateInstance(collectionType);
 
             // Get collection type's parameterless constructor
             var collectionConstructor = instantiableType.GetConstructor(Type.EmptyTypes);

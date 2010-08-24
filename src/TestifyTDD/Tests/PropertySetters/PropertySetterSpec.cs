@@ -7,12 +7,14 @@ using NUnit.Framework;
 using NBehave.Spec.NUnit;
 using Rhino.Mocks;
 using TestifyTDD;
+using TestifyTDD.DITool;
 using TestifyTDD.Helpers;
 using TestifyTDD.PropertySetters;
+using Tests.DITool;
 using Tests.TestDataBuilders;
 using Tests.TestingDomain;
 
-namespace Tests
+namespace Tests.PropertySetters
 {
     public class PropertySetterSpec : TestBase
     {
@@ -180,19 +182,31 @@ namespace Tests
 
             _typeMapper = M<ITypeMapper>();
             _typeMapper
-                .Expect(cm => cm.Resolve(typeof (IList<Address>)))
+                .Expect(tm => tm.Resolve(typeof (IList<Address>)))
                 .Return(typeof (List<Address>));
 
             _neighborsSetter = 
                 new TestDataBuilderCollectionPropertySetter<Household>(
-                    _propertyHelper,
-                    _typeMapper);
+                    _propertyHelper);
         }
 
         [Test]
         public void Should_set_value_on_property()
         {
             // Arrange
+            var filter = S<IInitializerFilter>();
+            var locator = S<IInitializerLocator>();
+            locator.Expect(loc => loc.FindInitializersInAppDomain())
+                .Return(new List<IInitializer>());
+
+            var ditDependencyCtor = new DITDependencyConstructor
+            {
+                TypeMapper = () => _typeMapper,
+                InitializerFilter = () => filter,
+                InitializerLocator = f => locator
+            };
+
+            DITDependencyCtor.Override(ditDependencyCtor);
 
             // Act
             _neighborsSetter.SetValueOnProperty(

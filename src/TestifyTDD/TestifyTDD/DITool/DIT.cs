@@ -1,24 +1,51 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace TestifyTDD.DITool
 {
-    public static class DIT
+    public class DIT
     {
-        [ThreadStatic] private static Dictionary<Type, Type> _typeMappings;
+        // How do you inject into the Dependency Injector itself
+        // when your runtime environment has no good entry point? 
+        // There's no main() or Global.asax.cs for a suite of Unit
+        // Tests. These protected Func<T> properties are inflection
+        // points for injecting mocks.
+        protected static DITDependencyConstructor Create = new DITDependencyConstructor();
 
-        public static T GetInstance<T>() where T : new()
+        /*[ThreadStatic]*/ 
+        private ITypeMapper _typeMapper;
+        public Type CreateInstance<T>()
         {
-            // lazy initialize the type mappings
-            if (_typeMappings == null)
-                InitializeTypeMappings();
-
-            return new T();
+            return CreateInstance(typeof (T));
         }
 
-        private static void InitializeTypeMappings()
+        public Type CreateInstance(Type type)
         {
-            
+            // lazy initialize the type mappings
+            if (_typeMapper == null)
+                InitializeTypeMapper();
+
+           return  _typeMapper.Resolve(type);
+        }
+
+        private void InitializeTypeMapper()
+        {
+            _typeMapper = Create.TypeMapper();
+
+            // Search all assemblies in app domain for IInitializers
+            var filter = Create.InitializerFilter();
+            var locator = Create.InitializerLocator(filter);
+            var initializerList = locator.FindInitializersInAppDomain();
+
+            foreach(var initializer in initializerList)
+                initializer.InitializeTypeMapper(_typeMapper);
         }
     }
 }
+
+/*
+NOTE: 
+    IInterfaceConventionInitializer.
+    Walk dependency tree through constructors to instantiate.
+*/

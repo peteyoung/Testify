@@ -5,7 +5,7 @@ using Tests.TestDataBuilders;
 using Tests.TestingDomain;
 using System.Collections.Generic;
 
-namespace Tests
+namespace Tests.PropertySetters
 {
     [TestFixture]
     public class PropertySetterFactorySpec

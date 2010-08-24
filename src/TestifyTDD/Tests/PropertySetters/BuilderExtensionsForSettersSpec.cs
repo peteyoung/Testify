@@ -6,7 +6,7 @@ using NBehave.Spec.NUnit;
 using TestifyTDD;
 using TestifyTDD.PropertySetters;
 
-namespace Tests
+namespace Tests.PropertySetters
 {
     [TestFixture]
     public class BuilderExtensionsForSettersSpec

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TestifyTDD.DITool;
 
 namespace TestifyTDD
 {
@@ -8,10 +9,15 @@ namespace TestifyTDD
     {
         private Dictionary<Type, Type> _typeMap = new Dictionary<Type, Type>();
 
+        public void Map<TINTERFACE, TTYPE>()
+        {
+            Map(typeof(TINTERFACE), typeof(TTYPE));
+        }
+
         public void Map(Type interface_, Type type)
         {
             // TODO: handle abstract classes
-            
+
             if (! interface_.IsInterface)
                 throw new ArgumentException(string.Format(
                     "interface_ must actually be a type that is an interface. {0} is a concrete type",
@@ -20,8 +26,13 @@ namespace TestifyTDD
             _typeMap.Add(interface_, type);
         }
 
-        public Type Resolve(Type typeToResolve)
+        public Type Resolve<TTYPE>()
         {
+            return Resolve(typeof(TTYPE));
+        }
+
+        public Type Resolve(Type typeToResolve)
+        {            
             // If we have an instantiable type just return it.
             if (! typeToResolve.IsInterface)
                 return typeToResolve;
@@ -37,8 +48,12 @@ namespace TestifyTDD
 
             var mappedType = _typeMap[typeKey];
 
-            // Non-generic types get returned at this point
+            // Non-generic types and get returned at this point.
             if (! mappedType.IsGenericTypeDefinition)
+                return mappedType;
+
+            // Open generic type definitions get returned at this point.
+            if (typeToResolve.ContainsGenericParameters)
                 return mappedType;
 
             // We need to create an instantiable generic type based on the 
@@ -59,16 +74,6 @@ namespace TestifyTDD
                 return typeToResolve.GetGenericTypeDefinition();
 
             return typeToResolve;
-        }
-
-        public static TypeMapper CreateDefaultMapper()
-        {
-            var mapper = new TypeMapper();
-
-            mapper.Map(typeof(IList), typeof(ArrayList));
-            mapper.Map(typeof(IList<>), typeof(List<>));
-
-            return mapper;
         }
     }
 }

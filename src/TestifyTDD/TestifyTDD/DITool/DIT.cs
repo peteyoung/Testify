@@ -15,9 +15,14 @@ namespace TestifyTDD.DITool
 
         /*[ThreadStatic]*/ 
         private ITypeMapper _typeMapper;
-        public Type CreateInstance<T>()
+//        public Type CreateInstance<T>()
+//        {
+//            return CreateInstance(typeof (T));
+//        }
+
+        public T CreateInstance<T>() where T : class
         {
-            return CreateInstance(typeof (T));
+            return CreateInstance(typeof(T)) as T;
         }
 
         public Type CreateInstance(Type type)

@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionTypeSpike.cs" />
+    <Compile Include="ConstructorSpike.cs" />
     <Compile Include="DI\AppDomainSpike.cs" />
     <Compile Include="DI\DISpike.cs" />
     <Compile Include="DI\Foo.cs" />
@@ -101,6 +102,16 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TestifyTDD\TestifyTDD.csproj">
+      <Project>{772BF1C4-71EB-40CD-8578-629D51ADEAF0}</Project>
+      <Name>TestifyTDD</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tests\Tests.csproj">
+      <Project>{3AB678EC-B04A-453E-8350-687E05DB6C54}</Project>
+      <Name>Tests</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

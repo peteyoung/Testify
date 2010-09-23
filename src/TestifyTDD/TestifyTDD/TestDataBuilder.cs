@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using TestifyTDD.DITool;
 using TestifyTDD.Helpers;
 using TestifyTDD.PropertySetters;
 
@@ -21,11 +22,19 @@ namespace TestifyTDD
         // a DI container/tool when the TDBs may be used in context with another
         // (or the same) DI container/tool. I also have reservations about
         // embedding a factory.
-        public TestDataBuilder() : this(
-            new PropertyHelper<TDOMAIN>(),
-            new PropertySetterFactory())
+//        public TestDataBuilder() : this(
+//            new PropertyHelper<TDOMAIN>(),
+//            new PropertySetterFactory())
+//        {
+//        }
+
+        public TestDataBuilder()
+            : this(
+                (new DIT()).CreateInstance<IPropertyHelper<TDOMAIN>>(),
+                (new DIT()).CreateInstance<IPropertySetterFactory>())
         {
         }
+
 
         public TestDataBuilder(
             IPropertyHelper<TDOMAIN> propertyHelper,

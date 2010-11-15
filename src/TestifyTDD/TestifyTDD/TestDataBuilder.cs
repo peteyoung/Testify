@@ -22,18 +22,18 @@ namespace TestifyTDD
         // a DI container/tool when the TDBs may be used in context with another
         // (or the same) DI container/tool. I also have reservations about
         // embedding a factory.
-//        public TestDataBuilder() : this(
-//            new PropertyHelper<TDOMAIN>(),
-//            new PropertySetterFactory())
-//        {
-//        }
-
-        public TestDataBuilder()
-            : this(
-                (new DIT()).CreateInstance<IPropertyHelper<TDOMAIN>>(),
-                (new DIT()).CreateInstance<IPropertySetterFactory>())
+        public TestDataBuilder() : this(
+            new PropertyHelper<TDOMAIN>(),
+            new PropertySetterFactory())
         {
         }
+
+//        public TestDataBuilder()
+//            : this(
+//                (new DIT()).CreateInstance<IPropertyHelper<TDOMAIN>>(),
+//                (new DIT()).CreateInstance<IPropertySetterFactory>())
+//        {
+//        }
 
 
         public TestDataBuilder(

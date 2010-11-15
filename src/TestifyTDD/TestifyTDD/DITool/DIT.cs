@@ -31,7 +31,9 @@ namespace TestifyTDD.DITool
             if (_typeMapper == null)
                 InitializeTypeMapper();
 
-           return  _typeMapper.Resolve(type);
+            // TODO: actually instantiate an instance
+
+            return  _typeMapper.Resolve(type);
         }
 
         private void InitializeTypeMapper()

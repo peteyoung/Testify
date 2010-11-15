@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="TestifyTDD">
+</Property><Property Name="Solution File" Value="C:\Projects\Testify\src\TestifyTDD.sln">
+</Property><Property Name="Date" Value="Friday, July 30, 2010">
+</Property><Property Name="Time" Value="18:48 PM">
+</Property></Properties><Event ErrorLevel="0" Project="TestifyTDD" Source="TestifyTDD\TestifyTDD\TestifyTDD.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="TestifyTDD" Source="TestifyTDD\TestifyTDD\TestifyTDD.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Tests" Source="TestifyTDD\Tests\Tests.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Tests" Source="TestifyTDD\Tests\Tests.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Spikes" Source="TestifyTDD\Spikes\Spikes.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Spikes" Source="TestifyTDD\Spikes\Spikes.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="TestifyTDD.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="TestifyTDD.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="TestifyTDD" Source="TestifyTDD\TestifyTDD\TestifyTDD.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Tests" Source="TestifyTDD\Tests\Tests.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Spikes" Source="TestifyTDD\Spikes\Spikes.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

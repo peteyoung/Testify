@@ -1,0 +1,46 @@
+ 1.) Updated TortoiseHG
+ 2.) Had to move "C:\Program Files\TortoiseHg\" before 
+     "C:\Program Files\Mercurial" in the system path.
+ 3.) env GIT_SSL_NO_VERIFY=true git clone https://github.com/schacon/hg-git.git
+ 4.) added following to [paths] section of hgrc for repo
+         github = git+ssh://git@github.com/peteyoung/Testify.git
+ 5.) added [extensions] section to C:\Users\Administrator\mercurial.ini
+ 6.) added following to [extensions] section
+         hggit = C:\Projects\hg-git\hggit
+ 7.) Created a new public private key pair with PuTTY Key Generator
+	     - Defaulted to SSH-2 RSA
+	     - Add Key passphrase before saving private key
+ 8.) Pasted public key into GitHub 
+	     - Edit Your Profile
+	     - SSH Keys (menu on left)
+	     - Add SSH Key
+	     - Paste in public key and submit
+ 9.) Imported private key into Pageant
+	     - Run Pageant.exe from TortoiseHG directory
+	     - Double click computer with hat in system tray
+	     - Add Key
+         - Enter passphrase from above
+10.) hg push github
+
+References
+=======================================
+http://glyphobet.net/blog/essay/2029
+http://rasmuskl.dk/post/Converting-a-Mercurial-repository-to-Git-(Windows).aspx
+https://github.com/schacon/hg-git#readme
+http://superuser.com/questions/73027/how-do-i-prevent-a-no-supported-authentication-methods-available-error-when-us
+http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter9.html
+
+Notes
+=======================================
+Had one issue where error message "abort: repository git+ssh://git@github.com/peteyoung/Testify.git not found!"
+kept appearing. This happens when the hggit plugin is not installed. I had put the extension in the wrong
+user's mercurial.ini.
+
+
+
+
+
+https://github.com/peteyoung/Testify.git
+git@github.com:peteyoung/Testify.git
+git+ssh://git@github.com/peteyoung/Testify.git
+
